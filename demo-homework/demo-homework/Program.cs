@@ -11,13 +11,15 @@ namespace demo_homework
     {
         static void Main(string[] args)
         {
-            var result = TestResult();
+            const string gitUrl = @"https://github.com/taninpong/DemoTestforAcademy-true";
+
+            var result = GetTestResult(gitUrl);
             Console.WriteLine(
                 $"Username: {result.Username}" +
                 $"\nTest: {result.TotalTest}" +
                 $"\nPass:{result.Pass}" +
-                $"\nFail: {result.Fail}" +
-                $"\nSkip: {result.Skip}");
+                $"\tFail: {result.Fail}" +
+                $"\tSkip: {result.Skip}");
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace demo_homework
         /// <summary>
         /// Read data from test (Example)
         /// </summary>
-        /// <returns></returns>
+        /// <returns>result from test</returns>
         private static HomeworkTestResult TestResult()
         {
             // Prepare commands
@@ -85,6 +87,63 @@ namespace demo_homework
             var convertor = new HomeworkResultConverter();
             var result = convertor.GetHomeworkResult(username, data);
             return result;
+        }
+
+        /// <summary>
+        /// Get data from test
+        /// </summary>
+        /// <param name="url">github url</param>
+        /// <returns>result from test</returns>
+        private static HomeworkTestResult GetTestResult(string url)
+        {
+            // Find Directory's name from URL
+            const int githubIndexCount = 11;
+            var githubIndex = url.LastIndexOf("github.com");
+            var resultSubstring = url.Substring(githubIndex + githubIndexCount);
+            var resultSplited = resultSubstring.Split('/');
+            var directoryName = resultSplited.FirstOrDefault().ToLower();
+            
+            // Prepare Git clone commands
+            var navigateToRootCommand = "cd /";
+            var navigateToGitCommand = "cd git";
+            var createDirectoryCommand = $"md {directoryName}";
+            var navigateToDirectoryWasCreated = $"cd {directoryName}";
+            var cloneCommand = $"git clone {url}";
+
+            var commands =
+                $"{navigateToRootCommand}" +
+                $"&{navigateToGitCommand}" +
+                $"&{createDirectoryCommand}" +
+                $"&{navigateToDirectoryWasCreated}" +
+                $"&{cloneCommand}";
+
+            // Process Git clone commands
+            Console.WriteLine($"Process is starting to clone project {directoryName}\n");
+            Process.Start(new ProcessStartInfo("cmd", $"/c {commands}") { UseShellExecute = false }).WaitForExit();
+            Console.WriteLine("\nProcess is end. Clone was completed");
+            
+            // Prepare test commands
+            var navigateToTestProjectCommand = $"cd Git/{directoryName}/DemoTestforAcademy-true/Training.TestDrivenDevelopement/TDD.TestProject";
+            commands =
+                $"{navigateToRootCommand}" +
+                $"&{navigateToTestProjectCommand}" +
+                $"&dotnet test";
+
+            // Process test command
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo("cmd", $"/c {commands}") { UseShellExecute = false, RedirectStandardOutput = true }
+            };
+            process.Start();
+
+            // Get data from test
+            var data = process.StandardOutput.ReadToEnd();
+            
+            // Convert to HomeworkTestResult model
+            var convertor = new HomeworkResultConverter();
+            var result = convertor.GetHomeworkResult(directoryName, data);
+            return result;
+
         }
 
     }
