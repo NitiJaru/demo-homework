@@ -10,11 +10,14 @@ namespace demo_homework
     {
         public HomeworkTestResult GetHomeworkResult(string username, string testResult)
         {
+            if (string.IsNullOrEmpty(username)) return null;
+            if (string.IsNullOrEmpty(testResult)) return null;
             return GetHomeWorkResultWithTotalLine(username, GetTotalLine(testResult));
         }
 
         private string GetTotalLine(string testResult)
         {
+            if (string.IsNullOrEmpty(testResult)) return null;
             string[] separators = { "\n", "\r" };
             var keyWordTotal = "Total tests:";
             var keyWordPass = "Passed:";
@@ -31,6 +34,7 @@ namespace demo_homework
 
         private HomeworkTestResult GetHomeWorkResultWithTotalLine(string username, string totalLine)
         {
+            if (string.IsNullOrEmpty(username)) return null;
             if (totalLine == null)
             {
                 return new HomeworkTestResult { Username = username, IsHaveTest = false };
