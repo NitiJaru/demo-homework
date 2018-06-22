@@ -14,9 +14,11 @@ namespace demo_homework
             const string gitUrl = @"https://github.com/taninpong/DemoTestforAcademy-true";
 
             var result = GetTestResult(gitUrl);
+            Console.WriteLine("-------------------------------------");
             Console.WriteLine(
-                $"Username: {result.Username}" +
-                $"\nTest: {result.TotalTest}" +
+                $"[Result]" +
+                $"\nUsername: {result.Username}" +
+                $"\nTotal Test: {result.TotalTest}" +
                 $"\nPass:{result.Pass}" +
                 $"\tFail: {result.Fail}" +
                 $"\tSkip: {result.Skip}");
@@ -90,46 +92,59 @@ namespace demo_homework
         }
 
         /// <summary>
+        /// </summary>
+        /// <param name="githubUrl"></param>
+
+        /// <summary>
         /// Get data from test
         /// </summary>
-        /// <param name="url">github url</param>
+        /// <param name="githubUrl">GitHub url</param>
+        /// <param name="testProjectPath">Test project path</param>
         /// <returns>result from test</returns>
-        private static HomeworkTestResult GetTestResult(string url)
+        private static HomeworkTestResult GetTestResult(string githubUrl, string testProjectPath = "")
         {
-            // Find Directory's name from URL
-            const int githubIndexCount = 11;
-            var githubIndex = url.LastIndexOf("github.com");
-            var resultSubstring = url.Substring(githubIndex + githubIndexCount);
-            var resultSplited = resultSubstring.Split('/');
-            var directoryName = resultSplited.FirstOrDefault().ToLower();
-            
+            if (string.IsNullOrEmpty(githubUrl) || string.IsNullOrWhiteSpace(githubUrl))
+            {
+                Console.WriteLine("Can not find any url. did you missing?");
+                return new HomeworkTestResult();
+            }
+
+            // Finding Directory's name and FullDirectory's name from url
+            Console.WriteLine("> Creating directory's name. Please wait.");
+            var urlSplited = githubUrl.ToLower().Split('/');
+            var directoryIndex = urlSplited.Count();
+            var directoryProjectNameIndex = directoryIndex - 1;
+            var directoryNameIndex = directoryIndex - 2;
+
+            var directoryName = urlSplited[directoryNameIndex];
+            var fullDirectoryName = $"{urlSplited[directoryNameIndex]}/{urlSplited[directoryProjectNameIndex]}";
+            Console.WriteLine("> Create directory's name was completed.");
+
             // Prepare Git clone commands
-            var navigateToRootCommand = "cd /";
-            var navigateToGitCommand = "cd git";
             var createDirectoryCommand = $"md {directoryName}";
             var navigateToDirectoryWasCreated = $"cd {directoryName}";
-            var cloneCommand = $"git clone {url}";
+            var cloneCommand = $"git clone {githubUrl}";
 
             var commands =
-                $"{navigateToRootCommand}" +
-                $"&{navigateToGitCommand}" +
-                $"&{createDirectoryCommand}" +
+                $"{createDirectoryCommand}" +
                 $"&{navigateToDirectoryWasCreated}" +
                 $"&{cloneCommand}";
 
             // Process Git clone commands
-            Console.WriteLine($"Process is starting to clone project {directoryName}\n");
+            Console.WriteLine($"> Process Git clone project {directoryName} is starting. Please wait.");
             Process.Start(new ProcessStartInfo("cmd", $"/c {commands}") { UseShellExecute = false }).WaitForExit();
-            Console.WriteLine("\nProcess is end. Clone was completed");
-            
+            Console.WriteLine("> Process Git clone is end. Git clone was completed.");
+
             // Prepare test commands
-            var navigateToTestProjectCommand = $"cd Git/{directoryName}/DemoTestforAcademy-true/Training.TestDrivenDevelopement/TDD.TestProject";
+            var TestProjectUrl = !(string.IsNullOrEmpty(testProjectPath) || string.IsNullOrWhiteSpace(testProjectPath)) ?
+                 testProjectPath : "Training.TestDrivenDevelopement/TDD.TestProject";
+            var navigateToTestProjectCommand = $"cd {fullDirectoryName}/{TestProjectUrl}";
             commands =
-                $"{navigateToRootCommand}" +
-                $"&{navigateToTestProjectCommand}" +
+                $"{navigateToTestProjectCommand}" +
                 $"&dotnet test";
 
             // Process test command
+            Console.WriteLine("> Process analysis is starting. Please wait.");
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo("cmd", $"/c {commands}") { UseShellExecute = false, RedirectStandardOutput = true }
@@ -138,7 +153,8 @@ namespace demo_homework
 
             // Get data from test
             var data = process.StandardOutput.ReadToEnd();
-            
+            Console.WriteLine("> Process analysis was completed.");
+
             // Convert to HomeworkTestResult model
             var convertor = new HomeworkResultConverter();
             var result = convertor.GetHomeworkResult(directoryName, data);
