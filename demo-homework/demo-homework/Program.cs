@@ -90,11 +90,7 @@ namespace demo_homework
             var result = convertor.GetHomeworkResult(username, data);
             return result;
         }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="githubUrl"></param>
-
+        
         /// <summary>
         /// Get data from test
         /// </summary>
@@ -103,6 +99,7 @@ namespace demo_homework
         /// <returns>result from test</returns>
         private static HomeworkTestResult GetTestResult(string githubUrl, string testProjectPath = "")
         {
+            // Validate GitHub's url
             if (string.IsNullOrEmpty(githubUrl) || string.IsNullOrWhiteSpace(githubUrl))
             {
                 Console.WriteLine("Can not find any url. did you missing?");
