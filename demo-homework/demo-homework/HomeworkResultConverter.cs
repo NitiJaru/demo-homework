@@ -54,7 +54,7 @@ namespace demo_homework
             if (string.IsNullOrEmpty(username)) return null;
             if (totalLine == null)
             {
-                return new HomeworkTestResult { Username = username, IsHaveTest = false };
+                return new HomeworkTestResult { GitUsername = username, IsHaveTest = false };
             }
             //ลบคำที่ไม่ใช้เพื่อให้เหลือค่าที่จะนำไปเก็บและคั่นด้วย ,
             var separator = ",";
@@ -71,7 +71,7 @@ namespace demo_homework
             var pointList = pointListText.Select(int.Parse)?.ToList();
             var result = new HomeworkTestResult
             {
-                Username = username,
+                GitUsername = username,
                 IsHaveTest = true,
                 TotalTest = pointList[0],
                 Pass = pointList[1],

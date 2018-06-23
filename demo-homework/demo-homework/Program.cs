@@ -11,13 +11,23 @@ namespace demo_homework
     {
         static void Main(string[] args)
         {
-            const string gitUrl = @"https://github.com/taninpong/DemoTestforAcademy-true";
+            // Example: Total Test: 10, Pass: 10, Fail: 0, Skip: 0
+            //const string gitUrl = @"https://github.com/taninpong/DemoTestforAcademy-true";
 
-            var result = GetTestResult(gitUrl);
+            // Example: Total Test: 10, Pass: 1, Fail: 9, Skip: 0
+            //const string gitUrl = @"https://github.com/taninpong/DemoTestforAcademy-fail";
+
+            // Example: Total Test: 0, Pass: 0, Fail: 0, Skip: 0
+            const string gitUrl = @"https://github.com/taninpong/DemoTestforAcademy-notest";
+
+            var tester = new GitTestResult();
+            var result = tester.GetTestResult(gitUrl);
+
+            //var result = GetTestResult(gitUrl);
             Console.WriteLine("-------------------------------------");
             Console.WriteLine(
                 $"[Result]" +
-                $"\nUsername: {result.Username}" +
+                $"\nUsername: {result.GitUsername}" +
                 $"\nTotal Test: {result.TotalTest}" +
                 $"\nPass:{result.Pass}" +
                 $"\tFail: {result.Fail}" +

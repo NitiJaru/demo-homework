@@ -8,7 +8,7 @@ namespace demo_homework
 {
     public class HomeworkTestResult
     {
-        public string Username { get; set; }
+        public string GitUsername { get; set; }
         public bool IsHaveTest { get; set; }
         public int TotalTest { get; set; }
         public int Pass { get; set; }

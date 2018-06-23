@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="HomeworkResultConverter.cs" />
     <Compile Include="HomeworkTestResult.cs" />
+    <Compile Include="IGitTester.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
